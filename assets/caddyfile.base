@@ -1,0 +1,6 @@
+https://mon.${DOMAIN} {
+    basicauth {
+        monitoring ${MONITORING_PASSWORD_HASH}
+    }
+    reverse_proxy http://127.0.0.1:19999
+}

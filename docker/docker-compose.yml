@@ -1,0 +1,11 @@
+version: '2'
+
+services:
+  ubuntu:
+    image: minecraft-server-ubuntu
+    build:
+      context: ./ubuntu
+    volumes:
+      - ../:/home/ubuntu/minecraft-server:ro
+    ports:
+      - 127.0.0.1:8080:80
