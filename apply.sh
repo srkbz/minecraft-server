@@ -29,14 +29,14 @@ function main {
     printf "\n"
 
     printf "Installing netdata:\n"
-    #sudo bash <(curl -Ss https://my-netdata.io/kickstart-static64.sh) --stable-channel
+    sudo bash <(curl -Ss https://my-netdata.io/kickstart-static64.sh) --stable-channel
     printf "\n"
 
     printf "Configuring Caddy:\n"
     envsubst < ./assets/caddyfile.base > "${tempFolder}/Caddyfile"
     sudo mv "${tempFolder}/Caddyfile" /etc/caddy/Caddyfile
     sudo chown root:root /etc/caddy/Caddyfile
-    #systemctl reload caddy
+    systemctl reload caddy
     printf "\n"
     sudo rm -rf "$tempFolder"
 }
