@@ -1,18 +1,42 @@
 #!/usr/bin/env bash
 set -euo pipefail
+cd "$(realpath $(dirname ${BASH_SOURCE[0]}))"
+source "./src/common.sh"
 
-SCRIPT_ROOT="$(realpath $(dirname ${BASH_SOURCE[0]}))"
-cd $SCRIPT_ROOT
+configPath="./config.env"
 
-configPath="${SCRIPT_ROOT}/config.env"
+function main {
+    ensure-sudo
+    ensure-dependencies apache2-utils
+    log-sep
 
-printf "Machine domain: "
-read -r domain
+    ask-for "Machine domain" domain
+    ask-for-password "Monitoring password" monitoringPassword
 
-printf "Monitoring password: "
-read -rs monitoringPassword
-printf "\n"
+    monitoringPasswordHash=$(hash-password $monitoringPassword)
 
-monitoringPasswordHash=$(htpasswd -bnBC 6 "" "${monitoringPassword}" | tr -d ':\n' | base64 | tr -d '\n')
+    write-config \
+        "DOMAIN" $domain \
+        "MONITORING_PASSWORD_HASH" $monitoringPasswordHash
+}
 
-printf "%s=%s\n" "DOMAIN" $domain "MONITORING_PASSWORD_HASH" $monitoringPasswordHash > $configPath
+function ask-for {
+    printf "$1: "
+    read -r $2
+}
+
+function ask-for-password {
+    printf "$1: "
+    read -rs $2
+    printf "\n"
+}
+
+function hash-password {
+    htpasswd -bnBC 6 "" "$1" | tr -d ':\n' | base64 | tr -d '\n'
+}
+
+function write-config {
+    printf "%s=%s\n" $@ > $configPath
+}
+
+main $@

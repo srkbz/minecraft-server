@@ -6,6 +6,6 @@ services:
     build:
       context: ./ubuntu
     volumes:
-      - ../:/home/ubuntu/minecraft-server:ro
+      - ../:/home/ubuntu/minecraft-server
     ports:
       - 127.0.0.1:8080:80

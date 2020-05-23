@@ -1,44 +1,66 @@
 #!/usr/bin/env bash
 set -euo pipefail
+cd "$(realpath $(dirname ${BASH_SOURCE[0]}))"
+source "./src/common.sh"
 
-SCRIPT_ROOT="$(realpath $(dirname ${BASH_SOURCE[0]}))"
-cd $SCRIPT_ROOT
-
-configPath="${SCRIPT_ROOT}/config.env"
-tempFolder="/tmp/minecraft-server-apply"
-aptDependencies="apache2-utils curl gettext-base git caddy"
+configPath="./config.env"
+tempFolder="./tmp"
+aptDependencies="curl gettext-base git caddy"
 
 function main {
-    sudo mkdir -p "$tempFolder"
-    sudo chown -R $(whoami) "$tempFolder"
+    create-temp-folder
     load-config
 
-    printf "Ensuring sudo access\n"
-    sudo -v
-    printf "\n"
+    ensure-sudo
 
-    printf "Installing apt repositories:\n"
-    sudo sh -c 'printf "deb [trusted=yes] https://apt.fury.io/caddy/ /\n" > /etc/apt/sources.list.d/caddy-fury.list'
-    sudo apt-get update
-    printf "\n"
-    
-    printf "Installing required apt packages:\n"
-    printf " - %s\n" $aptDependencies
-    printf "\n"
-    sudo apt-get install -y $aptDependencies
-    printf "\n"
+    install-apt-repositories \
+        "deb [trusted=yes] https://apt.fury.io/caddy/ /"
 
-    printf "Installing netdata:\n"
-    sudo bash <(curl -Ss https://my-netdata.io/kickstart-static64.sh) --stable-channel
-    printf "\n"
+    install-apt-packages \
+        curl gettext-base git caddy
 
-    printf "Configuring Caddy:\n"
+    install-netdata
+    configure-caddy
+
+    destroy-temp-folder
+}
+
+function create-temp-folder {
+    sudo mkdir -p "$tempFolder"
+    sudo chown -R $(whoami) "$tempFolder"
+}
+
+function destroy-temp-folder {
+    sudo rm -rf "$tempFolder"
+}
+
+function install-apt-repositories {
+    log-title "Installing required apt repositories"
+    printf " - %s\n" "$@"
+    printf "%s\n" "$@" > "${tempFolder}/srkbz.list"
+    sudo mv "${tempFolder}/srkbz.list" /etc/apt/sources.list.d/srkbz.list
+    sudo chown root:root /etc/apt/sources.list.d/srkbz.list
+    run-silent sudo apt-get update
+}
+
+function install-apt-packages {
+    log-title "Installing required apt packages"
+    printf " - %s\n" $@
+    run-silent sudo apt-get install -y $@
+}
+
+function install-netdata {
+    log-title "Installing netdata"
+    sudo bash -c 'bash <(curl -Ss https://my-netdata.io/kickstart-static64.sh) --stable-channel'
+}
+
+function configure-caddy {
+    log-title "Configuring Caddy"
     envsubst < ./assets/caddyfile.base > "${tempFolder}/Caddyfile"
     sudo mv "${tempFolder}/Caddyfile" /etc/caddy/Caddyfile
     sudo chown root:root /etc/caddy/Caddyfile
     systemctl reload caddy
     printf "\n"
-    sudo rm -rf "$tempFolder"
 }
 
 function load-config {
