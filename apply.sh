@@ -20,6 +20,7 @@ function main {
         curl gettext-base git caddy
 
     install-netdata
+    install-ourcraft
     configure-caddy
 
     destroy-temp-folder
@@ -51,15 +52,26 @@ function install-apt-packages {
 
 function install-netdata {
     log-title "Installing netdata"
-    sudo bash -c 'bash <(curl -Ss https://my-netdata.io/kickstart-static64.sh) --stable-channel'
+    run-silent sudo bash -c 'bash <(curl -Ss https://my-netdata.io/kickstart-static64.sh) --stable-channel --accept'
 }
+
+function install-ourcraft {(
+    log-title "Installing ourcraft"
+    cd /usr/local/src
+    if [ ! -d "./ourcraft" ]; then
+        run-silent sudo git clone https://github.com/sirikon/ourcraft.git
+    fi
+    cd ./ourcraft
+    run-silent sudo git pull
+    run-silent sudo ./install.sh
+)}
 
 function configure-caddy {
     log-title "Configuring Caddy"
     envsubst < ./assets/caddyfile.base > "${tempFolder}/Caddyfile"
     sudo mv "${tempFolder}/Caddyfile" /etc/caddy/Caddyfile
     sudo chown root:root /etc/caddy/Caddyfile
-    systemctl reload caddy
+    run-silent systemctl reload caddy
     printf "\n"
 }
 
