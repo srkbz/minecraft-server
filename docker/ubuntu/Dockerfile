@@ -1,5 +1,7 @@
 FROM ubuntu:20.04
-RUN apt-get update && apt-get upgrade -y && apt-get install -y sudo openssl ca-certificates
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y sudo openssl ca-certificates
 RUN echo "Set disable_coredump false" >> /etc/sudo.conf
 RUN groupadd ubuntu && useradd \
     --gid ubuntu \
