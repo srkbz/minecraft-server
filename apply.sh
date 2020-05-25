@@ -21,6 +21,15 @@ function main {
 
     install-netdata
     install-ourcraft
+
+    apply-ufw \
+        "default allow outgoing" \
+        "default deny incoming" \
+        "allow in 22 comment SSH" \
+        "allow in 80 comment Caddy-HTTP" \
+        "allow in 443 comment Caddy-HTTPS" \
+        "allow in 25565 comment Minecraft" \
+
     configure-caddy
 
     destroy-temp-folder
@@ -64,6 +73,16 @@ function install-ourcraft {(
     cd ./ourcraft
     run-silent sudo git pull
     run-silent sudo ./install.sh
+)}
+
+function apply-ufw {(
+    run-silent sudo ufw --force reset
+    sudo rm /etc/ufw/*rules.*
+    for rule in "$@"
+    do
+        run-silent sudo ufw $rule
+    done
+    run-silent sudo ufw enable
 )}
 
 function configure-caddy {
