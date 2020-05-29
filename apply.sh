@@ -76,13 +76,14 @@ function install-ourcraft {(
 )}
 
 function apply-ufw {(
+    log-title "Installing UFW configuration"
     run-silent sudo ufw --force reset
     sudo rm /etc/ufw/*rules.*
     for rule in "$@"
     do
         run-silent sudo ufw $rule
     done
-    run-silent sudo ufw enable
+    run-silent sudo ufw --force enable
 )}
 
 function configure-caddy {
