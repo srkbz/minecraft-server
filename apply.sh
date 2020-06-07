@@ -19,7 +19,7 @@ function main {
     install-apt-packages \
         curl gettext-base git caddy
 
-    install-netdata
+    #install-netdata
     install-ourcraft
 
     apply-ufw \
@@ -31,6 +31,8 @@ function main {
         "allow in 25565 comment Minecraft" \
 
     configure-caddy
+
+    create-ourcraft-user
 
     destroy-temp-folder
 }
@@ -93,6 +95,16 @@ function configure-caddy {
     sudo chown root:root /etc/caddy/Caddyfile
     run-silent systemctl reload caddy
     printf "\n"
+}
+
+function create-ourcraft-user {
+    username="ourcraft"
+    getent group "${username}" &>/dev/null || groupadd --system "${username}"
+    id -u "${username}" &>/dev/null || useradd --system \
+        --gid "${username}" \
+        --create-home \
+        --shell /usr/bin/bash \
+        "${username}"
 }
 
 function load-config {
