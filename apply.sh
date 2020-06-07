@@ -99,18 +99,19 @@ function configure-caddy {
 
 function create-ourcraft-user {
     username="ourcraft"
-    getent group "${username}" &>/dev/null || groupadd --system "${username}"
-    id -u "${username}" &>/dev/null || useradd --system \
+    getent group "${username}" &>/dev/null || sudo groupadd "${username}"
+    id -u "${username}" &>/dev/null || sudo useradd \
         --gid "${username}" \
         --create-home \
         --shell /usr/bin/bash \
         "${username}"
-    loginctl enable-linger "${username}"
-    su "${username}" -c "mkdir -p ~${username}/.ssh"
+    sudo loginctl enable-linger "${username}"
+    sudo su "${username}" -c "mkdir -p ~${username}/.ssh"
     (
-        cd ~ourcraft/.ssh
-        cp ~/.ssh/authorized_keys .
-        chown "${username}:${username}" ./authorized_keys
+        authKeys=~/.ssh/authorized_keys
+        sudo cd ~ourcraft/.ssh
+        sudo cp $authKeys .
+        sudo chown "${username}:${username}" ./authorized_keys
     )
 }
 
