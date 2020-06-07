@@ -19,8 +19,8 @@ function main {
     install-apt-packages \
         curl gettext-base git caddy
 
-    #install-netdata
-    install-ourcraft
+    install-netdata
+    #install-ourcraft
 
     apply-ufw \
         "default allow outgoing" \
