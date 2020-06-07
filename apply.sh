@@ -105,6 +105,10 @@ function create-ourcraft-user {
         --create-home \
         --shell /usr/bin/bash \
         "${username}"
+    loginctl enable-linger "${username}"
+    su "${username}" -c "mkdir ~${username}/.ssh"
+    cp ~/.ssh/authorized_keys "~${username}/.ssh/authorized_keys"
+    chown "${username}:${username}" "~${username}/.ssh/authorized_keys"
 }
 
 function load-config {
