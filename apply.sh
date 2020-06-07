@@ -106,9 +106,9 @@ function create-ourcraft-user {
         --shell /usr/bin/bash \
         "${username}"
     loginctl enable-linger "${username}"
-    su "${username}" -c "mkdir ~${username}/.ssh"
+    su "${username}" -c "mkdir -p ~${username}/.ssh"
     (
-        cd "~${username}/.ssh/authorized_keys"
+        cd "~${username}/.ssh"
         cp ~/.ssh/authorized_keys .
         chown "${username}:${username}" ./authorized_keys
     )
