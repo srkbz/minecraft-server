@@ -112,6 +112,7 @@ function create-ourcraft-user {
         cd ~ourcraft/.ssh
         cp ~/.ssh/authorized_keys .
         sudo chown -R "${username}:${username}" ~ourcraft/.ssh
+        sudo chmod +r ~ourcraft/.ssh/authorized_keys
     )
 }
 
