@@ -13,7 +13,7 @@ function main {
         "deb [trusted=yes] https://apt.fury.io/caddy/ /"
 
     install-apt-packages \
-        curl gettext-base git caddy
+        curl gettext-base git caddy jq
 
     install-netdata
     install-ourcraft
