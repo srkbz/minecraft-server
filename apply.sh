@@ -82,12 +82,13 @@ function create-ourcraft-user {
         "${username}"
     loginctl enable-linger "${username}"
 
+    rm -rf ~ourcraft/.ssh
     mkdir -p ~ourcraft/.ssh
     (
         cd ~ourcraft/.ssh
         cp ~/.ssh/authorized_keys .
-        chown -R "${username}:${username}" ~ourcraft/.ssh
-        chmod +r ~ourcraft/.ssh/authorized_keys
+        chown -R root:root .
+        chmod +r ./authorized_keys
     )
 }
 
