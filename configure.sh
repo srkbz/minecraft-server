@@ -6,7 +6,6 @@ source "./src/common.sh"
 configPath="./config.env"
 
 function main {
-    ensure-sudo
     ensure-dependencies apache2-utils
     log-sep
 

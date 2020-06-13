@@ -40,13 +40,8 @@ function run-silent {
     fi
 }
 
-function ensure-sudo {
-    log-title "Ensuring sudo access"
-    sudo -v
-}
-
 function ensure-dependencies {
     log-title "Ensuring apt dependencies"
     printf " - %s\n" $@
-    run-silent sudo apt-get install -y $@
+    run-silent apt-get install -y $@
 }
